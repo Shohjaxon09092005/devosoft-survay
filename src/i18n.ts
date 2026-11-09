@@ -197,6 +197,9 @@ export const messages: Record<Lang, {
   home: string
   genericName: string
   apiNotConfigured: string
+  crmNoteFailed: string
+  crmRequestFailed: string
+  rateLimited: string
   submitFailed: string
 }> = {
   uz: {
@@ -226,6 +229,9 @@ export const messages: Record<Lang, {
     home: 'Bosh sahifaga',
     genericName: 'Mijoz',
     apiNotConfigured: "So'rovnomani yuborish uchun CRM API manzili hali sozlanmagan.",
+    crmNoteFailed: 'Lead Kommo’da yaratildi, lekin javoblar izohini saqlashda xatolik bo‘ldi. Takror yubormang; administrator bilan bog‘laning.',
+    crmRequestFailed: 'Kommo bilan bog‘lanishda xatolik yuz berdi. Birozdan so‘ng qayta urinib ko‘ring.',
+    rateLimited: 'Juda ko‘p urinish bo‘ldi. Birozdan so‘ng qayta urinib ko‘ring.',
     submitFailed: 'Yuborishda xatolik yuz berdi',
   },
   en: {
@@ -255,6 +261,9 @@ export const messages: Record<Lang, {
     home: 'Back to survey',
     genericName: 'Customer',
     apiNotConfigured: 'The CRM API endpoint has not been configured yet.',
+    crmNoteFailed: 'The lead was created in Kommo, but saving the survey details failed. Do not resubmit; please contact the site administrator.',
+    crmRequestFailed: 'Could not connect to Kommo. Please try again shortly.',
+    rateLimited: 'Too many attempts. Please wait a moment and try again.',
     submitFailed: 'Something went wrong while submitting your request',
   },
   ru: {
@@ -284,6 +293,9 @@ export const messages: Record<Lang, {
     home: 'Вернуться к анкете',
     genericName: 'Клиент',
     apiNotConfigured: 'Адрес CRM API пока не настроен.',
+    crmNoteFailed: 'Лид создан в Kommo, но ответы анкеты сохранить не удалось. Не отправляйте заявку повторно; свяжитесь с администратором.',
+    crmRequestFailed: 'Не удалось связаться с Kommo. Попробуйте ещё раз позже.',
+    rateLimited: 'Слишком много попыток. Подождите немного и попробуйте снова.',
     submitFailed: 'Не удалось отправить заявку',
   },
 }

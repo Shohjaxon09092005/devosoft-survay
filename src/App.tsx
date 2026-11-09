@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useReducer, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { submitLead, type LeadPayload } from './api'
+import { LeadApiError, submitLead, type LeadPayload } from './api'
 import {
   LANGS,
   QUESTIONS,
@@ -165,7 +165,8 @@ function SurveyPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (new FormData(event.currentTarget).get('website')) return
+    const websiteField = new FormData(event.currentTarget).get('website')
+    if (websiteField) return
     if (state.submitting) return
 
     const hasMissing = QUESTIONS.some((question) => {
@@ -197,6 +198,7 @@ function SurveyPage() {
       page_url: window.location.origin + '/survey',
       submitted_at: new Date().toISOString(),
       priority: getPriority(state.answers.timeline ?? ''),
+      website: typeof websiteField === 'string' ? websiteField : '',
     }
 
     try {
@@ -204,11 +206,19 @@ function SurveyPage() {
       dispatch({ type: 'SUBMIT_SUCCESS' })
       sessionStorage.removeItem(SURVEY_STORAGE_KEY)
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : ''
+      const errorMessages: Record<string, string> = {
+        CRM_NOT_CONFIGURED: text.apiNotConfigured,
+        CRM_NOTE_FAILED: text.crmNoteFailed,
+        CRM_RATE_LIMITED: text.crmRequestFailed,
+        CRM_UNAVAILABLE: text.crmRequestFailed,
+        CRM_REQUEST_FAILED: text.crmRequestFailed,
+        LEAD_DISQUALIFIED: text.disqualifiedMessage,
+        RATE_LIMITED: text.rateLimited,
+      }
       dispatch({
         type: 'SUBMIT_ERROR',
-        error: errorMessage === 'Lead API endpoint is not configured'
-          ? text.apiNotConfigured
+        error: error instanceof LeadApiError
+          ? errorMessages[error.code] ?? text.submitFailed
           : text.submitFailed,
       })
     }
