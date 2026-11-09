@@ -1,0 +1,53 @@
+:root {
+  --brand-navy: #071b3c;
+  --brand-navy-strong: #0b1f3e;
+  --brand-blue: #6ba6ff;
+  --brand-blue-strong: #254fff;
+  --brand-surface: rgba(11, 20, 38, 0.75);
+  --brand-surface-soft: rgba(23, 35, 61, 0.72);
+  --brand-border: rgba(255, 255, 255, 0.14);
+  --brand-text: #f5f8ff;
+  --brand-text-soft: #d9e8ff;
+  --brand-muted: #9aaad6;
+  --brand-success: #7bd5b3;
+  --brand-shadow: rgba(10, 14, 30, 0.45);
+  --brand-gradient: linear-gradient(135deg, #7db3ff 0%, #4d7eff 100%);
+  --brand-gradient-soft: linear-gradient(180deg, rgba(19, 31, 58, 0.72), rgba(6, 14, 30, 0.88));
+  --brand-radius: 22px;
+  --brand-radius-sm: 14px;
+  --brand-input: rgba(255, 255, 255, 0.04);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  background: var(--brand-navy);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(75, 124, 255, 0.42), transparent 35%),
+    linear-gradient(180deg, #061a38 0%, #081d3f 35%, #06142d 100%);
+  color: var(--brand-text);
+  font-family: 'Figtree Variable', 'Figtree', sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+#root {
+  min-height: 100vh;
+}
