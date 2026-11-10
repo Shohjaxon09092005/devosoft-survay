@@ -9,13 +9,13 @@ React + TypeScript + Vite frontend and a small Node.js API. The browser sends th
 3. Configure the Node server environment:
 
    ```env
-   KOMMO_BASE_URL=https://YOUR_ACCOUNT.kommo.com
+   KOMMO_BASE_URL=https://qodiraliyevshohjaxon2005.amocrm.ru
    KOMMO_ACCESS_TOKEN=your_private_integration_token
    ALLOWED_ORIGINS=https://devosoft-landing.devosoft.uz
    PORT=3000
    ```
 
-   `KOMMO_BASE_URL` is the account-specific API host. The server validates that it is an HTTPS `*.kommo.com` URL; it is configurable at deploy time, so no account subdomain is baked into the app.
+   `KOMMO_BASE_URL` is the account-specific API host. The server accepts HTTPS account hosts under `*.amocrm.ru` or `*.kommo.com`; it is configurable at deploy time.
 
 4. The integration creates a Kommo lead and a linked contact with the lead's phone number, then adds a text note to the lead with survey answers, language, page URL, and UTM attribution. No Kommo custom field IDs are required.
 

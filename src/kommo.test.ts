@@ -71,6 +71,24 @@ describe('Kommo lead integration', () => {
     expect(fetchImpl).not.toHaveBeenCalled()
   })
 
+  it('uses the configured amoCRM account domain for API requests', async () => {
+    const fetchImpl = vi.fn()
+      .mockResolvedValueOnce(jsonResponse([{ id: 12345 }]))
+      .mockResolvedValueOnce(jsonResponse({ _embedded: { notes: [{ id: 77 }] } }))
+
+    await expect(createKommoLead(payload, {
+      ...env,
+      KOMMO_BASE_URL: 'https://qodiraliyevshohjaxon2005.amocrm.ru',
+    }, fetchImpl)).resolves.toEqual({ leadId: 12345 })
+
+    expect(fetchImpl.mock.calls[0][0]).toBe(
+      'https://qodiraliyevshohjaxon2005.amocrm.ru/api/v4/leads/complex',
+    )
+    expect(fetchImpl.mock.calls[1][0]).toBe(
+      'https://qodiraliyevshohjaxon2005.amocrm.ru/api/v4/leads/notes',
+    )
+  })
+
   it('requires server-side Kommo credentials', async () => {
     await expect(createKommoLead(payload, {}, vi.fn()))
       .rejects.toBeInstanceOf(IntegrationError)
@@ -87,6 +105,11 @@ describe('Kommo lead integration', () => {
 
   it('validates the CRM payload and includes all survey answers in the note', () => {
     expect(validateLeadPayload(payload)).toBe(true)
+    expect(validateLeadPayload({ ...payload, pain: 'a'.repeat(500) })).toBe(true)
+    expect(validateLeadPayload({ ...payload, pain: 'a'.repeat(501) })).toBe(false)
+    expect(validateLeadPayload({ ...payload, employees: 'unknown-range' })).toBe(false)
+    expect(validateLeadPayload({ ...payload, maturity: 'unknown-state' })).toBe(false)
+    expect(validateLeadPayload({ ...payload, timeline: 'unknown-timeline' })).toBe(false)
     expect(formatLeadNote(payload)).toContain('UTM campaign: spring')
     expect(formatLeadNote({ ...payload, lang: 'en' })).toContain('Automation maturity: Partially automated')
     expect(formatLeadNote({ ...payload, lang: 'ru' })).toContain('Уровень автоматизации: Частичная автоматизация')

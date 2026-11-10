@@ -158,13 +158,17 @@ const FIELD_LIMITS = {
   industry: 120,
   employees: 20,
   maturity: 60,
-  pain: 60,
+  pain: 500,
   timeline: 30,
   name: 60,
   phone: 20,
   region: 120,
   page_url: 2048,
 }
+
+const EMPLOYEE_OPTIONS = new Set(['1-5', '6-10', '11-20', '21-50', '51-100', '100+'])
+const MATURITY_OPTIONS = new Set(['none', 'partial', 'disconnected', 'erp'])
+const TIMELINE_OPTIONS = new Set(['this_month', '1_3_months', 'learning'])
 
 export class IntegrationError extends Error {
   constructor(code, statusCode = 502) {
@@ -186,6 +190,9 @@ export function validateLeadPayload(payload) {
   if (payload.name.trim().length < 2 || payload.industry.trim().length < 2) return false
   if (!/^\+998\d{9}$/.test(payload.phone)) return false
   if (!payload.employees || !payload.maturity || !payload.pain || !payload.timeline || !payload.region) return false
+  if (!EMPLOYEE_OPTIONS.has(payload.employees)) return false
+  if (!MATURITY_OPTIONS.has(payload.maturity)) return false
+  if (!TIMELINE_OPTIONS.has(payload.timeline)) return false
 
   try {
     const pageUrl = new URL(payload.page_url)
@@ -213,7 +220,7 @@ function getKommoBaseUrl(env) {
 
   if (
     url.protocol !== 'https:' ||
-    !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.kommo\.com$/i.test(url.hostname) ||
+    !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.(?:kommo\.com|amocrm\.ru)$/i.test(url.hostname) ||
     url.port ||
     url.pathname !== '/' ||
     url.search ||
