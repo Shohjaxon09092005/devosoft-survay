@@ -141,6 +141,19 @@ function SurveyPage() {
     dispatch({ type: 'SET_ANSWER', field, value })
   }
 
+  const handleOptionSelection = (value: string) => {
+    handleAnswer(currentQuestion.id, value)
+
+    if (currentQuestion.disqualify && value === '1-5') {
+      dispatch({ type: 'DISQUALIFY' })
+      return
+    }
+
+    if (state.currentStep < TOTAL_STEPS - 1) {
+      dispatch({ type: 'NEXT' })
+    }
+  }
+
   const handleNext = () => {
     if (!currentQuestion) return
     const error = getValidationError(currentQuestion, selectedAnswer, lang, isValidPhone)
@@ -313,7 +326,7 @@ function SurveyPage() {
                   type="button"
                   className={`option-button ${answerValue === option.value ? 'selected' : ''}`}
                   aria-pressed={answerValue === option.value}
-                  onClick={() => handleAnswer(currentQuestion.id, option.value)}
+                  onClick={() => handleOptionSelection(option.value)}
                 >
                   {getOptionLabel(currentQuestion, option.value, option.label, lang)}
                 </button>
@@ -367,7 +380,7 @@ function SurveyPage() {
               >
                 {state.submitting ? text.submitting : text.submit}
               </button>
-            ) : (
+            ) : currentQuestion.type === 'text' || currentQuestion.type === 'phone' ? (
               <button
                 type="button"
                 className="primary-button"
@@ -376,7 +389,7 @@ function SurveyPage() {
               >
                 {text.next}
               </button>
-            )}
+            ) : null}
           </div>
         </form>
       </main>

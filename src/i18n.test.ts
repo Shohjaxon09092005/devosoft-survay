@@ -18,8 +18,8 @@ describe('survey translations', () => {
     expect(maturity).toBeDefined()
     expect(region).toBeDefined()
 
-    expect(getOptionLabel(maturity!, 'none', "A) Hech qanday tizim yo'q (Excel yoki qo'lda)", 'en'))
-      .toBe('A) No system (Excel or manual processes)')
+    expect(getOptionLabel(maturity!, 'none', "Hech qanday tizim yo'q (Excel yoki qo'lda)", 'en'))
+      .toBe('No system (Excel or manual processes)')
     expect(getOptionLabel(region!, 'Toshkent shahri', 'Toshkent shahri', 'ru'))
       .toBe('город Ташкент')
   })

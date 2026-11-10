@@ -17,27 +17,19 @@ const questionCopy: Record<Lang, Record<string, { title: string; options?: Recor
     maturity: {
       title: 'Biznesingiz qanchalik tizimlashtirilgan?',
       options: {
-        none: "A) Hech qanday tizim yo'q (Excel yoki qo'lda)",
-        partial: 'B) Qisman avtomatlashtirilgan',
-        disconnected: "C) Bir nechta dastur bor, lekin bog'lanmagan",
-        erp: 'D) ERP bor, yaxshilash kerak',
+        none: "Hech qanday tizim yo'q (Excel yoki qo'lda)",
+        partial: 'Qisman avtomatlashtirilgan',
+        disconnected: "Bir nechta dastur bor, lekin bog'lanmagan",
+        erp: 'ERP bor, yaxshilash kerak',
       },
     },
-    pain: {
-      title: 'Hozirda sizdagi eng katta muammo qaysi?',
-      options: {
-        warehouse: "a) Ombor va ta'minot nazorati",
-        sales: 'b) Sotuv va mijozlar nazorati',
-        finance: "c) Moliya va hisobotlarni ko'ra olmaslik",
-        remote: 'd) Xodimlarni masofadan nazorat qila olmaslik',
-      },
-    },
+    pain: { title: 'Hozirda sizdagi eng katta muammo qaysi?' },
     timeline: {
       title: 'Qachon tizim joriy qilmoqchisiz?',
       options: {
-        this_month: 'a) Shu oy',
-        '1_3_months': 'b) 1–3 oy ichida',
-        learning: "c) Hozircha o'rganyapman",
+        this_month: 'Shu oy',
+        '1_3_months': '1–3 oy ichida',
+        learning: "Hozircha o'rganyapman",
       },
     },
     name: { title: 'Ismingiz?' },
@@ -60,27 +52,19 @@ const questionCopy: Record<Lang, Record<string, { title: string; options?: Recor
     maturity: {
       title: 'How well-structured are your business processes?',
       options: {
-        none: 'A) No system (Excel or manual processes)',
-        partial: 'B) Partially automated',
-        disconnected: 'C) Several tools, but they are not connected',
-        erp: 'D) We have an ERP, but it needs improvement',
+        none: 'No system (Excel or manual processes)',
+        partial: 'Partially automated',
+        disconnected: 'Several tools, but they are not connected',
+        erp: 'We have an ERP, but it needs improvement',
       },
     },
-    pain: {
-      title: 'What is your biggest challenge right now?',
-      options: {
-        warehouse: 'a) Warehouse and supply management',
-        sales: 'b) Sales and customer management',
-        finance: 'c) Limited visibility into finances and reports',
-        remote: 'd) Monitoring employees remotely',
-      },
-    },
+    pain: { title: 'What is your biggest challenge right now?' },
     timeline: {
       title: 'When are you planning to implement a system?',
       options: {
-        this_month: 'a) This month',
-        '1_3_months': 'b) Within 1–3 months',
-        learning: 'c) I am currently researching',
+        this_month: 'This month',
+        '1_3_months': 'Within 1–3 months',
+        learning: 'I am currently researching',
       },
     },
     name: { title: 'What is your name?' },
@@ -103,27 +87,19 @@ const questionCopy: Record<Lang, Record<string, { title: string; options?: Recor
     maturity: {
       title: 'Насколько систематизирован ваш бизнес?',
       options: {
-        none: 'A) Системы нет (Excel или ручные процессы)',
-        partial: 'B) Частичная автоматизация',
-        disconnected: 'C) Несколько программ, но они не связаны',
-        erp: 'D) ERP уже есть, но её нужно улучшить',
+        none: 'Системы нет (Excel или ручные процессы)',
+        partial: 'Частичная автоматизация',
+        disconnected: 'Несколько программ, но они не связаны',
+        erp: 'ERP уже есть, но её нужно улучшить',
       },
     },
-    pain: {
-      title: 'Какая у вас сейчас главная проблема?',
-      options: {
-        warehouse: 'a) Контроль склада и снабжения',
-        sales: 'b) Контроль продаж и клиентов',
-        finance: 'c) Недостаточная прозрачность финансов и отчётности',
-        remote: 'd) Удалённый контроль сотрудников',
-      },
-    },
+    pain: { title: 'Какая у вас сейчас главная проблема?' },
     timeline: {
       title: 'Когда вы планируете внедрить систему?',
       options: {
-        this_month: 'a) В этом месяце',
-        '1_3_months': 'b) В течение 1–3 месяцев',
-        learning: 'c) Пока изучаю варианты',
+        this_month: 'В этом месяце',
+        '1_3_months': 'В течение 1–3 месяцев',
+        learning: 'Пока изучаю варианты',
       },
     },
     name: { title: 'Как вас зовут?' },
