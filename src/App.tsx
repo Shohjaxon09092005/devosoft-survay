@@ -176,6 +176,12 @@ function SurveyPage() {
     setLocalRegion(nextValue === 'other' ? localRegion : nextValue)
   }
 
+  const handleReturnHome = () => {
+    dispatch({ type: 'RESET' })
+    setLocalRegion('')
+    sessionStorage.removeItem(SURVEY_STORAGE_KEY)
+  }
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const websiteField = new FormData(event.currentTarget).get('website')
@@ -244,7 +250,7 @@ function SurveyPage() {
         <div className="survey-card terminal-card">
           <h1>{text.disqualifiedTitle}</h1>
           <p>{text.disqualifiedMessage}</p>
-          <Link to="/" className="primary-button">{text.home}</Link>
+          <Link to="/" className="primary-button" onClick={handleReturnHome}>{text.home}</Link>
         </div>
       </div>
     )
@@ -258,7 +264,7 @@ function SurveyPage() {
           <div className="success-badge">✓</div>
           <h1>{text.successTitle(state.answers.name ?? text.genericName)}</h1>
           <p>{text.successMessage(state.answers.phone ? normalizePhone(state.answers.phone) : '')}</p>
-          <Link to="/" className="primary-button">{text.home}</Link>
+          <Link to="/" className="primary-button" onClick={handleReturnHome}>{text.home}</Link>
         </div>
       </div>
     )

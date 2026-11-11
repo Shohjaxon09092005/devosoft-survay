@@ -60,6 +60,26 @@ describe('survey reducer', () => {
     expect(state.currentStep).toBe(1)
     expect(state.answers.employees).toBe('6-10')
   })
+
+  it('resets the completed survey when returning home', () => {
+    const state = surveyReducer(
+      {
+        currentStep: 7,
+        answers: { name: 'Ali', phone: '+998901234567' },
+        status: 'success',
+        submitting: false,
+        submitError: 'An old error',
+      },
+      { type: 'RESET' },
+    )
+
+    expect(state).toEqual({
+      currentStep: 0,
+      answers: {},
+      status: 'active',
+      submitting: false,
+    })
+  })
 })
 
 describe('phone helpers', () => {

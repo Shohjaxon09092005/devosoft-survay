@@ -3,6 +3,7 @@ import { createServer } from 'node:http'
 import { extname, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createKommoLead, IntegrationError } from './kommo.js'
+import { sendTelegramLead, TelegramIntegrationError } from './telegram.js'
 
 const rootDir = resolve(fileURLToPath(new URL('../', import.meta.url)))
 const publicDir = resolve(rootDir, 'dist')
@@ -123,7 +124,11 @@ function serveFrontend(request, response) {
   sendStaticFile(response, filePath)
 }
 
-export function createAppServer({ env = process.env, leadCreator = createKommoLead } = {}) {
+export function createAppServer({
+  env = process.env,
+  leadCreator = createKommoLead,
+  leadNotifier = sendTelegramLead,
+} = {}) {
   const allowedOrigins = getAllowedOrigins(env)
 
   return createServer(async (request, response) => {
@@ -187,7 +192,27 @@ export function createAppServer({ env = process.env, leadCreator = createKommoLe
       }
 
       const result = await leadCreator(payload, env)
-      sendJson(response, 201, { ok: true, leadId: result.leadId }, allowedOrigin)
+      let telegramNotification = 'disabled'
+      try {
+        const notification = await leadNotifier(
+          payload,
+          result.leadId,
+          env,
+          undefined,
+          result.unsortedUid,
+        )
+        telegramNotification = notification.status
+      } catch (error) {
+        telegramNotification = 'failed'
+        const code = error instanceof TelegramIntegrationError ? error.code : 'INTERNAL_ERROR'
+        console.error(`Telegram lead notification failed: ${code}`)
+      }
+      sendJson(response, 201, {
+        ok: true,
+        leadId: result.leadId,
+        unsortedUid: result.unsortedUid,
+        telegramNotification,
+      }, allowedOrigin)
     } catch (error) {
       const knownError = error instanceof IntegrationError
       const code = knownError ? error.code : 'INTERNAL_ERROR'

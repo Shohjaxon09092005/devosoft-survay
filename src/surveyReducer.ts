@@ -5,6 +5,7 @@ export type SurveyAction =
   | { type: 'SET_ANSWER'; field: string; value: string }
   | { type: 'NEXT' }
   | { type: 'BACK' }
+  | { type: 'RESET' }
   | { type: 'DISQUALIFY' }
   | { type: 'SUBMIT_START' }
   | { type: 'SUBMIT_SUCCESS' }
@@ -60,6 +61,9 @@ export function surveyReducer(state: SurveyState, action: SurveyAction): SurveyS
         ...state,
         currentStep: Math.max(state.currentStep - 1, 0),
       }
+    }
+    case 'RESET': {
+      return getSurveyReducerInitialState()
     }
     case 'DISQUALIFY': {
       return {

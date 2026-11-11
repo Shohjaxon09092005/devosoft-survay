@@ -12,4 +12,4 @@ export function createKommoLead(
   payload: LeadPayload,
   env?: Record<string, string | undefined>,
   fetchImpl?: typeof fetch,
-): Promise<{ leadId: number }>
+): Promise<{ leadId: number; unsortedUid: string }>

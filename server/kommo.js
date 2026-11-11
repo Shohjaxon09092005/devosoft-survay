@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto'
+
 const FIELD_LABELS = {
   uz: {
     industry: 'Biznes yo‘nalishi',
@@ -294,11 +296,20 @@ export async function createKommoLead(payload, env = process.env, fetchImpl = fe
 
   const baseUrl = getKommoBaseUrl(env)
   const leadName = `Website: ${payload.industry} — ${payload.name}`
-  const leadResponse = await kommoRequest(
-    `${baseUrl}/api/v4/leads/complex`,
+  const timestamp = Math.floor(Date.now() / 1000)
+  const unsortedResponse = await kommoRequest(
+    `${baseUrl}/api/v4/leads/unsorted/forms`,
     env.KOMMO_ACCESS_TOKEN,
     [{
-      name: leadName,
+      source_uid: randomUUID(),
+      source_name: 'Devosoft website survey',
+      created_at: timestamp,
+      metadata: {
+        form_id: 'devosoft-website-survey',
+        form_name: 'Devosoft website survey',
+        form_page: payload.page_url,
+        form_sent_at: timestamp,
+      },
       _embedded: {
         contacts: [{
           name: payload.name,
@@ -306,15 +317,23 @@ export async function createKommoLead(payload, env = process.env, fetchImpl = fe
             field_code: 'PHONE',
             values: [{ value: payload.phone, enum_code: 'WORK' }],
           }],
+          tags_to_add: [{ name: 'Website' }],
         }],
-        tags: [{ name: 'Website' }],
+        leads: [{
+          name: leadName,
+          tags_to_add: [{ name: 'Website' }],
+        }],
       },
     }],
     fetchImpl,
   )
 
-  const createdLead = Array.isArray(leadResponse) ? leadResponse[0] : null
-  if (!createdLead || !Number.isInteger(createdLead.id)) {
+  const unsortedLead = unsortedResponse?._embedded?.unsorted?.[0]
+  const createdLead = unsortedLead?._embedded?.leads?.[0]
+  if (
+    typeof unsortedLead?.uid !== 'string' ||
+    !Number.isInteger(createdLead?.id)
+  ) {
     throw new IntegrationError('CRM_INVALID_RESPONSE')
   }
 
@@ -333,5 +352,5 @@ export async function createKommoLead(payload, env = process.env, fetchImpl = fe
     throw new IntegrationError('CRM_NOTE_FAILED', 502)
   }
 
-  return { leadId: createdLead.id }
+  return { leadId: createdLead.id, unsortedUid: unsortedLead.uid }
 }

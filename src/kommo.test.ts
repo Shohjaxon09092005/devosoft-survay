@@ -30,24 +30,47 @@ function jsonResponse(body: unknown, status = 200): Response {
 }
 
 describe('Kommo lead integration', () => {
-  it('creates a linked contact and lead, then adds a localized survey note', async () => {
+  it('creates an incoming lead in Unsorted, then adds a localized survey note', async () => {
     const fetchImpl = vi.fn()
-      .mockResolvedValueOnce(jsonResponse([{ id: 12345, contact_id: 67890 }]))
+      .mockResolvedValueOnce(jsonResponse({
+        _embedded: {
+          unsorted: [{
+            uid: 'incoming-uid-123',
+            _embedded: {
+              leads: [{ id: 12345 }],
+              contacts: [{ id: 67890 }],
+            },
+          }],
+        },
+      }))
       .mockResolvedValueOnce(jsonResponse({ _embedded: { notes: [{ id: 77 }] } }))
 
-    await expect(createKommoLead(payload, env, fetchImpl)).resolves.toEqual({ leadId: 12345 })
+    await expect(createKommoLead(payload, env, fetchImpl)).resolves.toEqual({
+      leadId: 12345,
+      unsortedUid: 'incoming-uid-123',
+    })
 
     expect(fetchImpl).toHaveBeenCalledTimes(2)
     const [createUrl, createOptions] = fetchImpl.mock.calls[0]
-    expect(createUrl).toBe('https://devosoft.kommo.com/api/v4/leads/complex')
+    expect(createUrl).toBe('https://devosoft.kommo.com/api/v4/leads/unsorted/forms')
     expect(createOptions.headers.Authorization).toBe(['Be', 'arer ', 'test-token'].join(''))
 
-    const lead = JSON.parse(createOptions.body)[0]
+    const unsorted = JSON.parse(createOptions.body)[0]
+    expect(unsorted.source_name).toBe('Devosoft website survey')
+    expect(unsorted.source_uid).toMatch(/^[0-9a-f-]{36}$/)
+    expect(unsorted.metadata).toMatchObject({
+      form_id: 'devosoft-website-survey',
+      form_name: 'Devosoft website survey',
+      form_page: payload.page_url,
+    })
+    const lead = unsorted._embedded.leads[0]
     expect(lead.name).toBe('Website: Retail — Ali Valiyev')
-    expect(lead._embedded.contacts[0].custom_fields_values[0]).toEqual({
+    expect(lead.tags_to_add).toEqual([{ name: 'Website' }])
+    expect(unsorted._embedded.contacts[0].custom_fields_values[0]).toEqual({
       field_code: 'PHONE',
       values: [{ value: '+998901234567', enum_code: 'WORK' }],
     })
+    expect(unsorted._embedded.contacts[0].tags_to_add).toEqual([{ name: 'Website' }])
 
     const [noteUrl, noteOptions] = fetchImpl.mock.calls[1]
     expect(noteUrl).toBe('https://devosoft.kommo.com/api/v4/leads/notes')
@@ -71,18 +94,33 @@ describe('Kommo lead integration', () => {
     expect(fetchImpl).not.toHaveBeenCalled()
   })
 
+  it('rejects a malformed Unsorted response before trying to add a note', async () => {
+    const fetchImpl = vi.fn().mockResolvedValueOnce(jsonResponse({ _embedded: { unsorted: [] } }))
+
+    await expect(createKommoLead(payload, env, fetchImpl))
+      .rejects.toMatchObject({ code: 'CRM_INVALID_RESPONSE' })
+    expect(fetchImpl).toHaveBeenCalledTimes(1)
+  })
+
   it('uses the configured amoCRM account domain for API requests', async () => {
     const fetchImpl = vi.fn()
-      .mockResolvedValueOnce(jsonResponse([{ id: 12345 }]))
+      .mockResolvedValueOnce(jsonResponse({
+        _embedded: {
+          unsorted: [{
+            uid: 'incoming-uid-123',
+            _embedded: { leads: [{ id: 12345 }] },
+          }],
+        },
+      }))
       .mockResolvedValueOnce(jsonResponse({ _embedded: { notes: [{ id: 77 }] } }))
 
     await expect(createKommoLead(payload, {
       ...env,
       KOMMO_BASE_URL: 'https://qodiraliyevshohjaxon2005.amocrm.ru',
-    }, fetchImpl)).resolves.toEqual({ leadId: 12345 })
+    }, fetchImpl)).resolves.toEqual({ leadId: 12345, unsortedUid: 'incoming-uid-123' })
 
     expect(fetchImpl.mock.calls[0][0]).toBe(
-      'https://qodiraliyevshohjaxon2005.amocrm.ru/api/v4/leads/complex',
+      'https://qodiraliyevshohjaxon2005.amocrm.ru/api/v4/leads/unsorted/forms',
     )
     expect(fetchImpl.mock.calls[1][0]).toBe(
       'https://qodiraliyevshohjaxon2005.amocrm.ru/api/v4/leads/notes',
@@ -96,7 +134,14 @@ describe('Kommo lead integration', () => {
 
   it('reports the partial success if Kommo creates a lead but rejects its answer note', async () => {
     const fetchImpl = vi.fn()
-      .mockResolvedValueOnce(jsonResponse([{ id: 12345 }]))
+      .mockResolvedValueOnce(jsonResponse({
+        _embedded: {
+          unsorted: [{
+            uid: 'incoming-uid-123',
+            _embedded: { leads: [{ id: 12345 }] },
+          }],
+        },
+      }))
       .mockResolvedValueOnce(jsonResponse({ title: 'Forbidden' }, 403))
 
     await expect(createKommoLead(payload, env, fetchImpl))
