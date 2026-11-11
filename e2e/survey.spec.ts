@@ -47,7 +47,11 @@ test('returning home after submission restarts the survey', async ({ page }) => 
   await expect(page.getByRole('heading', { name: 'Rahmat, Ali Valiyev!' })).toBeVisible()
   await page.getByRole('link', { name: 'Bosh sahifaga' }).click()
 
-  await expect(page).toHaveURL('/')
+  await expect(page).toHaveURL(/\/survey\?lang=uz$/)
+  await expect(page.getByText("Biznesingiz qaysi yo'nalishda?")).toBeVisible()
+  await expect(page.getByPlaceholder('Masalan: Chakana savdo')).toHaveValue('')
+
+  await page.reload()
   await expect(page.getByText("Biznesingiz qaysi yo'nalishda?")).toBeVisible()
   await expect(page.getByPlaceholder('Masalan: Chakana savdo')).toHaveValue('')
 })

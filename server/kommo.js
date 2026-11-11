@@ -13,7 +13,7 @@ const FIELD_LABELS = {
     medium: 'UTM medium',
     campaign: 'UTM campaign',
     page: 'Sahifa',
-    submitted: 'Yuborilgan vaqt',
+    submitted: 'Yuborilgan vaqt (Toshkent)',
   },
   en: {
     industry: 'Business industry',
@@ -27,7 +27,7 @@ const FIELD_LABELS = {
     medium: 'UTM medium',
     campaign: 'UTM campaign',
     page: 'Page',
-    submitted: 'Submitted at',
+    submitted: 'Submitted at (Tashkent time)',
   },
   ru: {
     industry: 'Сфера бизнеса',
@@ -41,7 +41,7 @@ const FIELD_LABELS = {
     medium: 'UTM medium',
     campaign: 'UTM campaign',
     page: 'Страница',
-    submitted: 'Дата отправки',
+    submitted: 'Дата отправки (Ташкент)',
   },
 }
 
@@ -189,6 +189,7 @@ export function validateLeadPayload(payload) {
     if (typeof payload[field] !== 'string' || payload[field].length > maxLength) return false
   }
 
+  if (!Number.isFinite(Date.parse(payload.submitted_at))) return false
   if (payload.name.trim().length < 2 || payload.industry.trim().length < 2) return false
   if (!/^\+998\d{9}$/.test(payload.phone)) return false
   if (!payload.employees || !payload.maturity || !payload.pain || !payload.timeline || !payload.region) return false
@@ -234,6 +235,23 @@ function getKommoBaseUrl(env) {
   return url.origin
 }
 
+function formatTashkentDateTime(value) {
+  const dateParts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Tashkent',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23',
+    }).formatToParts(new Date(value)).map(({ type, value: part }) => [type, part]),
+  )
+
+  return `${dateParts.day}.${dateParts.month}.${dateParts.year} ${dateParts.hour}:${dateParts.minute}:${dateParts.second}`
+}
+
 export function formatLeadNote(payload) {
   const labels = FIELD_LABELS[payload.lang] ?? FIELD_LABELS.uz
   const answerLabels = ANSWER_LABELS[payload.lang] ?? ANSWER_LABELS.uz
@@ -250,7 +268,7 @@ export function formatLeadNote(payload) {
     [labels.medium, payload.utm.medium],
     [labels.campaign, payload.utm.campaign],
     [labels.page, payload.page_url],
-    [labels.submitted, payload.submitted_at],
+    [labels.submitted, formatTashkentDateTime(payload.submitted_at)],
   ]
 
   return entries

@@ -150,12 +150,17 @@ describe('Kommo lead integration', () => {
 
   it('validates the CRM payload and includes all survey answers in the note', () => {
     expect(validateLeadPayload(payload)).toBe(true)
+    expect(validateLeadPayload({ ...payload, submitted_at: 'not-a-date' })).toBe(false)
     expect(validateLeadPayload({ ...payload, pain: 'a'.repeat(500) })).toBe(true)
     expect(validateLeadPayload({ ...payload, pain: 'a'.repeat(501) })).toBe(false)
     expect(validateLeadPayload({ ...payload, employees: 'unknown-range' })).toBe(false)
     expect(validateLeadPayload({ ...payload, maturity: 'unknown-state' })).toBe(false)
     expect(validateLeadPayload({ ...payload, timeline: 'unknown-timeline' })).toBe(false)
     expect(formatLeadNote(payload)).toContain('UTM campaign: spring')
+    expect(formatLeadNote({
+      ...payload,
+      submitted_at: '2026-11-11T14:25:36.138Z',
+    })).toContain('Yuborilgan vaqt (Toshkent): 11.11.2026 19:25:36')
     expect(formatLeadNote({ ...payload, lang: 'en' })).toContain('Automation maturity: Partially automated')
     expect(formatLeadNote({ ...payload, lang: 'ru' })).toContain('Уровень автоматизации: Частичная автоматизация')
   })

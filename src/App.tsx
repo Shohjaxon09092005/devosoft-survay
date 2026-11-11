@@ -250,7 +250,9 @@ function SurveyPage() {
         <div className="survey-card terminal-card">
           <h1>{text.disqualifiedTitle}</h1>
           <p>{text.disqualifiedMessage}</p>
-          <Link to="/" className="primary-button" onClick={handleReturnHome}>{text.home}</Link>
+          <Link to={`/survey?lang=${lang}`} className="primary-button" onClick={handleReturnHome}>
+            {text.home}
+          </Link>
         </div>
       </div>
     )
@@ -264,7 +266,9 @@ function SurveyPage() {
           <div className="success-badge">✓</div>
           <h1>{text.successTitle(state.answers.name ?? text.genericName)}</h1>
           <p>{text.successMessage(state.answers.phone ? normalizePhone(state.answers.phone) : '')}</p>
-          <Link to="/" className="primary-button" onClick={handleReturnHome}>{text.home}</Link>
+          <Link to={`/survey?lang=${lang}`} className="primary-button" onClick={handleReturnHome}>
+            {text.home}
+          </Link>
         </div>
       </div>
     )
